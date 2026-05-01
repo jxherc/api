@@ -22,12 +22,14 @@ export async function handlePosts(request, env, path) {
     const body = await request.json().catch(() => ({}));
     const ts   = Date.now();
     const post = {
-      id:   `${ts}`,
-      body: String(body.body || '').trim(),
+      id:    `${ts}`,
+      body:  String(body.body  || '').trim(),
       title: String(body.title || '').trim(),
-      date: new Date(ts).toISOString(),
+      date:  new Date(ts).toISOString(),
     };
-    if (!post.body) return json({ error: 'body required' }, 400);
+    if (body.image) post.image = String(body.image).trim();
+    if (body.via)   post.via   = String(body.via).trim();
+    if (!post.body && !post.image) return json({ error: 'body or image required' }, 400);
     await env.POSTS_KV.put(`post:${ts}`, JSON.stringify(post));
     return json(post, 201);
   }
