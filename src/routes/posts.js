@@ -27,9 +27,13 @@ export async function handlePosts(request, env, path) {
       title: String(body.title || '').trim(),
       date:  new Date(ts).toISOString(),
     };
-    if (body.image) post.image = String(body.image).trim();
-    if (body.via)   post.via   = String(body.via).trim();
-    if (!post.body && !post.image) return json({ error: 'body or image required' }, 400);
+    // images: accept array or single image, normalise to array
+    const imgs = Array.isArray(body.images)
+      ? body.images.slice(0, 9).map(u => String(u).trim()).filter(Boolean)
+      : body.image ? [String(body.image).trim()] : [];
+    if (imgs.length) { post.images = imgs; post.image = imgs[0]; } // image kept for compat
+    if (body.via) post.via = String(body.via).trim();
+    if (!post.body && !imgs.length) return json({ error: 'body or image required' }, 400);
     await env.POSTS_KV.put(`post:${ts}`, JSON.stringify(post));
     return json(post, 201);
   }
