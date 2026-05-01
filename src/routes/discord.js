@@ -10,11 +10,11 @@ async function verifyDiscordSignature(request, env) {
   const key     = await crypto.subtle.importKey(
     'raw',
     hexToBytes(env.DISCORD_PUBLIC_KEY),
-    { name: 'NODE-ED25519', namedCurve: 'NODE-ED25519' },
+    { name: 'Ed25519' },
     false,
     ['verify']
   );
-  return crypto.subtle.verify('NODE-ED25519', key, hexToBytes(signature), new TextEncoder().encode(message))
+  return crypto.subtle.verify('Ed25519', key, hexToBytes(signature), new TextEncoder().encode(message))
     .catch(() => false);
 }
 
