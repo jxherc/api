@@ -94,6 +94,19 @@ export async function handlePhotos(request, env, path) {
   const method = request.method;
   const id     = path.split('/')[2] || null;
 
+  // Serve individual photo from R2 — must come BEFORE the list handler
+  if (method === 'GET' && path.split('/').length > 2) {
+    const key = path.slice('/photos/'.length);
+    const obj = await env.PHOTOS_R2.get(key);
+    if (!obj) return new Response('not found', { status: 404 });
+    return new Response(obj.body, {
+      headers: {
+        'Content-Type': obj.httpMetadata?.contentType || 'image/jpeg',
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      },
+    });
+  }
+
   if (method === 'GET') {
     const list = await env.PHOTOS_KV.list({ prefix: 'photo:' });
     const items = await Promise.all(
@@ -137,15 +150,6 @@ export async function handlePhotos(request, env, path) {
     };
     await env.PHOTOS_KV.put(`photo:${ts}`, JSON.stringify(photo));
     return json(photo, 201);
-  }
-
-  if (method === 'GET' && path.startsWith('/photos/')) {
-    const key = path.slice('/photos/'.length);
-    const obj = await env.PHOTOS_R2.get(key);
-    if (!obj) return new Response('not found', { status: 404 });
-    return new Response(obj.body, {
-      headers: { 'Content-Type': obj.httpMetadata?.contentType || 'image/jpeg' }
-    });
   }
 
   if (method === 'DELETE' && id) {
