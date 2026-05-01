@@ -1,22 +1,26 @@
 name = "jxherc-api"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
+account_id = "ca010a7730e3021a577ccd02cc4150ee"
+routes = [
+  { pattern = "api.jxherc.com/*", zone_name = "jxherc.com" }
+]
 
 [[kv_namespaces]]
 binding = "POSTS_KV"
-id = "REPLACE_WITH_POSTS_KV_ID"
+id = "37f7ce746de94d88814894543d80f658"
 
 [[kv_namespaces]]
 binding = "STATUS_KV"
-id = "REPLACE_WITH_STATUS_KV_ID"
+id = "690601f207ff4362b8da3dd117344121"
 
 [[kv_namespaces]]
 binding = "BOOKMARKS_KV"
-id = "REPLACE_WITH_BOOKMARKS_KV_ID"
+id = "9cbacc132f9b43bfafb3b35ad3c24d32"
 
 [[kv_namespaces]]
 binding = "PHOTOS_KV"
-id = "REPLACE_WITH_PHOTOS_KV_ID"
+id = "a8542e5dc00048b79d5596346a3e7385"
 
 [[r2_buckets]]
 binding = "PHOTOS_R2"
